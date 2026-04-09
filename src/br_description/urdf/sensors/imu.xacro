@@ -1,0 +1,112 @@
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="imu" params="*origin sim sim_noise:=0.1 sim_imu_topic:='/imu/data' sim_rate:=100 parent prefix:='imu_'">
+        
+        <joint name="${parent}_to_${prefix}base_link" type="fixed">
+            <parent link="${parent}"/>
+            <child link="${prefix}base_link"/>
+            <xacro:insert_block name="origin" />
+        </joint>
+        <link name="${prefix}base_link">
+            <xacro:dummy_inertia/>
+            <visual>
+                <origin rpy="0 0 0" xyz="0 0 0.005"/>
+                <geometry>
+                    <box size="0.01 0.01 0.01"/>
+                </geometry>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0 0 0.005"/>
+                <geometry>
+                    <box size="0.01 0.01 0.01"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="${prefix}base_link_to_${prefix}sensor_link" type="fixed">
+            <parent link="${prefix}base_link"/>
+            <child link="${prefix}sensor_link"/>
+            <origin xyz="0 0 0.005"/>
+        </joint>
+        <link name="${prefix}sensor_link">
+            <xacro:dummy_inertia/>
+        </link>
+
+
+        <xacro:if value="${sim}">
+            <gazebo reference='${parent}_to_${prefix}base_link'>
+                <preserveFixedJoint>true</preserveFixedJoint>
+            </gazebo>
+            <gazebo reference='${prefix}base_link_to_${prefix}sensor_link'>
+                <preserveFixedJoint>true</preserveFixedJoint>
+            </gazebo>
+            <gazebo reference="imu_sensor_link">
+                <sensor name="imu_sensor" type="imu">
+                    <always_on>true</always_on>
+                    <update_rate>${sim_rate}</update_rate>
+                    <visualize>true</visualize>
+                    <topic>${sim_imu_topic}</topic>
+                    <imu>
+                    <angular_velocity>
+                        <x>
+                        <noise type="gaussian">
+                            <mean>0.0</mean>
+                            <stddev>${sim_noise}</stddev>
+                            <bias_mean>0.0000075</bias_mean>
+                            <bias_stddev>0.0000008</bias_stddev>
+                        </noise>
+                        </x>
+                        <y>
+                        <noise type="gaussian">
+                            <mean>0.0</mean>
+                            <stddev>${sim_noise}</stddev>
+                            <bias_mean>0.0000075</bias_mean>
+                            <bias_stddev>0.0000008</bias_stddev>
+                        </noise>
+                        </y>
+                        <z>
+                        <noise type="gaussian">
+                            <mean>0.0</mean>
+                            <stddev>${sim_noise}</stddev>
+                            <bias_mean>0.0000075</bias_mean>
+                            <bias_stddev>0.0000008</bias_stddev>
+                        </noise>
+                        </z>
+                    </angular_velocity>
+                    <linear_acceleration>
+                        <x>
+                        <noise type="gaussian">
+                            <mean>0.0</mean>
+                            <stddev>${10 * sim_noise}</stddev>
+                            <bias_mean>0.1</bias_mean>
+                            <bias_stddev>0.001</bias_stddev>
+                        </noise>
+                        </x>
+                        <y>
+                        <noise type="gaussian">
+                            <mean>0.0</mean>
+                            <stddev>${10 * sim_noise}</stddev>
+                            <bias_mean>0.1</bias_mean>
+                            <bias_stddev>0.001</bias_stddev>
+                        </noise>
+                        </y>
+                        <z>
+                        <noise type="gaussian">
+                            <mean>0.0</mean>
+                            <stddev>${10 * sim_noise}</stddev>
+                            <bias_mean>0.1</bias_mean>
+                            <bias_stddev>0.001</bias_stddev>
+                        </noise>
+                        </z>
+                    </linear_acceleration>
+                    </imu>
+                    <plugin name="imu_plugin" filename="libgazebo_ros_imu_sensor.so">
+                        <ros>
+                            <remapping>~/out:=${sim_imu_topic}</remapping>
+                        </ros>
+                    </plugin>
+                    <pose>0 0 0 0 0 0</pose>
+                </sensor>
+            </gazebo>
+        </xacro:if>
+
+    </xacro:macro>
+</robot>

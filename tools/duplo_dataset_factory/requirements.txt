@@ -1,0 +1,7 @@
+trimesh
+tqdm
+scipy
+numpy
+opencv-python
+matplotlib
+pyrender

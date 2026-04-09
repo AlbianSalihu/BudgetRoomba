@@ -1,0 +1,43 @@
+odom_ekf_node:
+  ros__parameters:
+    # frequency: 100.0
+    two_d_mode: True
+    world_frame: odom
+    base_link_frame: base_link
+    
+    publish_tf: true
+
+    use_control: False
+
+    control_config: [
+      True, True, False,
+      False, False, True
+    ]
+
+    imu0: /imu/data
+    imu0_remove_gravitational_acceleration: True
+    imu0_config: [
+        false,  false,  false,
+        false, false, false,
+        false,  false, false,
+        false, false, true,
+        true, true, false
+    ]
+    imu0_relative: True
+    imu0_differential: True
+
+    odom0: /arti_odom
+    odom0_config: [
+        false,  false,  false,
+        false, false, false,
+        true,  true, false,
+        false, false, true,
+        false, false, false
+    ]
+    odom0_relative: True
+
+
+
+
+
+

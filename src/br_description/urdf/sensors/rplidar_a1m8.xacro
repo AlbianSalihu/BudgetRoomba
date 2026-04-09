@@ -1,0 +1,79 @@
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="rplidar_a1m8" params="*origin sim sim_noise:=0.01 sim_lidar_topic:='/lidar/scan' sim_rate:=30 parent prefix:='lidar_'">
+        <joint name="${parent}_to_${prefix}base_link" type="fixed">
+            <parent link="${parent}"/>
+            <child link="${prefix}base_link"/>
+            <xacro:insert_block name="origin" />
+        </joint>
+        <link name="${prefix}base_link">
+            <xacro:dummy_inertia/>
+            <visual>
+                <origin rpy="1.57 0 3.14" xyz="0 0 0.0"/>
+                <geometry>
+                    <mesh filename="$(find br_description)/meshes/sensors/rplidar_a1m8.stl" scale="1e-3 1e-3 1e-3"/>
+                </geometry>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0 0 0.025"/>
+                <geometry>
+                    <box size="0.05 0.05 0.05"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="${prefix}base_link_to_${prefix}sensor_link" type="fixed">
+            <parent link="${prefix}base_link"/>
+            <child link="${prefix}sensor_link"/>
+            <origin xyz="0 0 0.025"/>
+        </joint>
+        <link name="${prefix}sensor_link">
+            <xacro:dummy_inertia/>
+        </link>
+
+
+        <xacro:if value="${sim}">
+            <gazebo reference='${parent}_to_${prefix}base_link'>
+                <preserveFixedJoint>true</preserveFixedJoint>
+            </gazebo>
+            <gazebo reference='${prefix}base_link_to_${prefix}sensor_link'>
+                <preserveFixedJoint>true</preserveFixedJoint>
+            </gazebo>
+            <gazebo reference="${prefix}sensor_link">
+                <sensor type="ray" name="lidar">
+                    <always_on>true</always_on>
+                    <update_rate>${sim_rate}</update_rate>
+                    <pose>0 0 0 0 0 0</pose>
+                    <visualize>false</visualize>
+                    <ray>
+                        <scan>
+                            <horizontal>
+                                <samples>360</samples>
+                                <resolution>1.0</resolution>
+                                <min_angle>0</min_angle>
+                                <max_angle>6.28</max_angle>
+                            </horizontal>
+                        </scan>
+                        <range>
+                            <min>0.1</min>
+                            <max>12</max>
+                            <resolution>0.01</resolution>
+                        </range>
+                        <noise>
+                            <type>gaussian</type>
+                            <mean>0.0</mean>
+                            <stddev>${sim_noise}</stddev>
+                        </noise>
+                    </ray>
+                    <plugin name="gazebo_ros_lidar_controller" filename="libgazebo_ros_ray_sensor.so">
+                        <ros>
+                            <remapping>~/out:=${sim_lidar_topic}</remapping>
+                        </ros>
+                        <output_type>sensor_msgs/LaserScan</output_type>
+                        <frame_name>${prefix}sensor_link</frame_name>
+
+                    </plugin>
+                </sensor>
+            </gazebo>
+        </xacro:if>
+
+    </xacro:macro>
+</robot>

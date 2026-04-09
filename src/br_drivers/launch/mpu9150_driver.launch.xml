@@ -1,0 +1,9 @@
+<launch>
+    <arg name="topic_name" default="/imu/data"/>
+
+    <node name="imu_driver" exec="mpu9150_driver" pkg="br_drivers">
+        <param from="$(find-pkg-share br_drivers)/config/mpu9150.yaml"/>
+        <remap from="data" to="$(var topic_name)"/>
+    </node>
+
+</launch>

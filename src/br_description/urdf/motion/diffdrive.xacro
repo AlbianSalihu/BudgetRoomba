@@ -1,0 +1,124 @@
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+<xacro:macro name="diffdrive" params="sim:=True sim_update_rate:=1000" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <joint name="main_body_to_wheel_left" type="continuous">
+    <parent link="main_body"/>
+    <child link="wheel_left"/>
+    <origin xyz="0.0 0.1 0.0" rpy="0 0 1.570796327"/>
+    <calibration rising="0.0"/>
+    <dynamics damping="0.0" friction="0.0"/>
+    <limit effort="30" velocity="1.0" lower="-2.2" upper="0.7" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="0.5" />
+  </joint>
+
+  <link name="wheel_left">
+    <xacro:dummy_inertia/>
+    
+    <visual>
+      <origin rpy="0 1.570796327 0" xyz="0.025 0 0 "/>
+      <geometry>
+        <cylinder length="0.05" radius="0.05"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 1.570796327 0" xyz="0.025 0 0 "/>
+      <geometry>
+        <cylinder length="0.05" radius="0.05"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="main_body_to_wheel_right" type="continuous">
+    <parent link="main_body"/>
+    <child link="wheel_right"/>
+    <origin xyz="0.0 -0.1 0.0" rpy="0 0 1.570796327"/>
+    <calibration rising="0.0"/>
+    <dynamics damping="0.0" friction="0.0"/>
+    <limit effort="30" velocity="1.0" lower="-2.2" upper="0.7" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="0.5" />
+  </joint>
+
+  <link name="wheel_right">
+    <xacro:dummy_inertia/>
+    
+
+    <visual>
+      <origin rpy="0 1.570796327 0" xyz="-0.025 0 0 "/>
+      <geometry>
+        <cylinder length="0.05" radius="0.05"/>
+      </geometry>
+    </visual>
+    <collision>
+   
+      <origin rpy="0 1.570796327 0" xyz="-0.025 0 0 "/>
+      <geometry>
+        <cylinder length="0.05" radius="0.05"/>
+      </geometry>
+    </collision>
+  </link>
+
+  
+
+  <xacro:if value="${sim}">
+    <gazebo>
+        <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+            <!-- Plugin update rate in Hz -->
+            <num_wheel_pairs>1</num_wheel_pairs>
+            <update_rate>${sim_update_rate}</update_rate>
+            <!-- Name of left joint, defaults to `left_joint` -->
+            <left_joint>main_body_to_wheel_left</left_joint>
+            <!-- Name of right joint, defaults to `right_joint` -->
+            <right_joint>main_body_to_wheel_right</right_joint>
+            <!-- The distance from the center of one wheel to the other, in meters, defaults to 0.34 m -->
+            <wheel_separation>0.25</wheel_separation>
+            <!-- Diameter of the wheels, in meters, defaults to 0.15 m -->
+            <wheel_diameter>0.1</wheel_diameter>
+            <!-- Wheel acceleration, in rad/s^2, defaults to 0.0 rad/s^2 -->
+            <max_wheel_acceleration>1.0</max_wheel_acceleration>
+            <!-- Maximum torque which the wheels can produce, in Nm, defaults to 5 Nm -->
+            <max_wheel_torque>25</max_wheel_torque>
+            <!-- Topic to receive geometry_msgs/Twist message commands, defaults to `cmd_vel` -->
+            <!-- Topic to publish nav_msgs/Odometry messages, defaults to `odom` -->
+            <odometryTopic>odom</odometryTopic>
+            <publish_odom_tf>False</publish_odom_tf>
+            <!-- Odometry frame, defaults to `odom` -->
+            <odometry_frame>odom</odometry_frame>
+            <!-- Robot frame to calculate odometry from, defaults to `base_footprint` -->
+            <robot_base_frame>base_link</robot_base_frame>
+            <!-- Odometry source, 0 for ENCODER, 1 for WORLD, defaults to WORLD -->
+            <odometry_source>0</odometry_source>
+            <!-- Set to true to publish transforms for the wheel links, defaults to false -->
+            <publish_wheel_tf>True</publish_wheel_tf>
+            <!-- Set to true to publish transforms for the odometry, defaults to true -->
+            <publish_odom>True</publish_odom>
+        </plugin>
+    </gazebo>
+    
+    <gazebo reference="wheel_right">
+        <material>Gazebo/Green</material>
+        <collision>
+          <surface>
+            <friction>
+              <ode>
+              <mu>0.1</mu> 
+              <mu2>0.1</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+    </gazebo>
+    <gazebo reference="wheel_left">
+        <material>Gazebo/Red</material>
+        <collision>
+          <surface>
+            <friction>
+              <ode>
+              <mu>0.1</mu> 
+              <mu2>0.1</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+    </gazebo>
+  </xacro:if>
+</xacro:macro>
+</robot>

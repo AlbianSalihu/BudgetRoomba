@@ -1,0 +1,19 @@
+# ROS 2 build artifacts
+build/
+install/
+log/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Dataset generator output
+tools/duplo_dataset_factory/generated/
+
+# LibreOffice locks
+.~lock.*
+
+# IDE
+.vscode/
+.idea/

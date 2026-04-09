@@ -1,0 +1,21 @@
+<launch>
+  <arg name="rviz" default="false"/>
+
+
+  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+  <include file="$(find-pkg-share gazebo_ros)/launch/gazebo.launch.py">
+    <arg name="server" value="false"/>
+  </include>
+  <include file="$(find-pkg-share gazebo_ros)/launch/gzserver.launch.py">
+    <arg name="verbose" value="true"/>
+    <arg name="world" value="$(find-pkg-share arena_gazebo)/sdf/arena.world"/>
+  </include>
+  <include file="$(find-pkg-share br_description)/launch/load.launch.xml">
+    <arg name="sim" value="true"/>
+    <arg name="viz" value="$(var rviz)"/>
+
+  </include>
+  <!-- <node name="spawn_urdf" pkg="gazebo_ros" exec="spawn_entity.py" args="-file $(find-pkg-share br_description)/urdf/budget_roomba.urdf.xacro -entity budget_roomba" /> -->
+    <node name="spawn_urdf" pkg="gazebo_ros" exec="spawn_entity.py" args="-topic robot_description -entity budget_roomba -x 2 -y 2 -z 0.1">
+    </node>
+</launch>

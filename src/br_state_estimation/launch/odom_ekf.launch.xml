@@ -1,0 +1,7 @@
+<launch>
+    <node pkg="robot_localization" exec="ekf_node" name="odom_ekf_node">
+        <param from="$(find-pkg-share br_state_estimation)/config/odom_ekf.yaml"/>
+    </node>
+    <node pkg="br_state_estimation" exec="odometry_generator" name="odometry_generator">
+    </node>
+</launch>

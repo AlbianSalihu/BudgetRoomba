@@ -1,0 +1,8 @@
+repositories:
+  arena_gazebo:
+    type: git
+    url: https://github.com/STIRobotCompetition2/arena_gazebo.git
+  br_description:
+    type: git
+    url: https://github.com/STIRobotCompetition2/br_description.git
+    version: basic_functional_robot

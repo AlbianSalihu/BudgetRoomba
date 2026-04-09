@@ -1,0 +1,7 @@
+<launch>
+    <node pkg="laser_filters" exec="scan_to_scan_filter_chain" name="scan_to_scan_filter_chain">
+        <param from="$(find-pkg-share br_filtering)/config/lidar_filter_pipeline.yaml"/>
+        <remap from="scan" to="/lidar/scan" />
+        <remap from="scan_filtered" to="/lidar/scan_filtered" />
+    </node>
+</launch>

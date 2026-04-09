@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<robot name="budget_roomba" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="dummy_inertia">
+    <inertial>
+      <origin xyz="0 0 0.0" rpy="0 0 0"/> 
+      <mass value="1e-2"/>
+      <inertia ixx="1e-3" ixy="0" ixz="0" iyy="1e-3" iyz="0" izz="1e-3"/>
+    </inertial>
+  </xacro:macro>
+  <xacro:include filename="$(find br_description)/urdf/motion/diffdrive.xacro" />
+  <xacro:include filename="$(find br_description)/urdf/sensors/imu.xacro" />
+  <xacro:include filename="$(find br_description)/urdf/sensors/raspberry_pi_camera_2_1.xacro" />
+  <xacro:include filename="$(find br_description)/urdf/sensors/rplidar_a1m8.xacro" />
+  <xacro:include filename="$(find br_description)/urdf/sensors/nav_unit.xacro" />
+
+
+
+  <xacro:arg name="sim" default="true"/>
+  <xacro:arg name="ground_truth_tf" default="false"/>
+
+
+  <link name="base_link">
+
+  </link>
+
+  <joint name="base_link_to_main_body" type="fixed">
+    <parent link="base_link"/>
+    <child link="main_body"/>
+    <origin xyz="0 0 0.05"/>
+  </joint>
+
+  <link name="main_body">
+    <inertial>
+      <origin xyz="0 0 0.0" rpy="0 0 0"/> 
+      <mass value="3"/>
+      <inertia ixx="1e-2" ixy="0" ixz="0" iyy="1e-2" iyz="0" izz="1e-2"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="-0.055 0 0.13"/>
+      <geometry>
+        <box size="0.3 0.2 0.2"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="-0.055 0 0.13"/>
+      <geometry>
+        <box size="0.3 0.2 0.2"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="main_body_to_back_ball" type="fixed">
+    <parent link="base_link"/>
+    <child link="back_ball"/>
+    <origin xyz="-0.205 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <link name="back_ball">
+    <inertial>
+      <origin xyz="0 0 0.0" rpy="0 0 0"/> 
+      <mass value="1e-1"/>
+      <inertia ixx="1e-3" ixy="0" ixz="0" iyy="1e-3" iyz="0" izz="1e-3"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0.01 "/>
+      <geometry>
+        <sphere radius="0.01"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0.01 "/>
+      <geometry>
+        <sphere radius="0.01"/>
+      </geometry>
+    </collision>
+  </link>
+  <xacro:if value="$(arg sim)">
+    <gazebo reference="back_ball">
+          <material>Gazebo/Gold</material>
+          <mu1>0.0</mu1>
+          <mu2>0.0</mu2>
+      </gazebo>
+    <gazebo reference="main_body_to_back_ball">
+      <preserveFixedJoint>true</preserveFixedJoint>
+    </gazebo>
+    <xacro:if value="$(arg ground_truth_tf)">
+      <gazebo>
+            <plugin name="budget_roomba_ros_plugin" filename="libbudget_roomba_ros_plugin.so">
+              <world_frame_id>world</world_frame_id>
+              <robot_base_frame_id>base_link</robot_base_frame_id>
+              <ground_truth_tf>true</ground_truth_tf>
+            </plugin>
+      </gazebo>
+    </xacro:if>
+  </xacro:if>
+  
+
+  <!-- <xacro:if value="$(arg sim)">
+    <xacro:diffdrive sim="$(arg sim)"/>
+    <xacro:imu sim="$(arg sim)" sim_noise="0.01" parent="base_link">
+      <origin xyz="0 0 0.3" rpy="0 0 0"/>
+    </xacro:imu>
+
+    <xacro:raspberry_pi_camera_2_1 sim="$(arg sim)" sim_noise="0.01" parent="base_link">
+      <origin xyz="0 0 0.3" rpy="0 ${1.57 / 2} 0"/>
+    </xacro:raspberry_pi_camera_2_1>
+
+    <xacro:rplidar_a1m8 sim="$(arg sim)" sim_noise="0.01" parent="base_link">
+      <origin xyz="0 0 0.35" rpy="0 0 0"/>
+    </xacro:rplidar_a1m8>
+  </xacro:if> -->
+  
+  <!-- <xacro:unless value="$(arg sim)"> -->
+    <xacro:nav_unit parent="base_link">
+      <origin xyz="-0.18 0 0.235" rpy="0 0 3.14"/>
+    </xacro:nav_unit>
+  <!-- </xacro:unless> -->
+  
+
+
+
+
+
+ 
+
+</robot>

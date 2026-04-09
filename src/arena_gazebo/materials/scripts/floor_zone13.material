@@ -1,0 +1,16 @@
+material floor/zone13
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        // Relative to the location of the material script
+        texture ../textures/floor_zone13.png
+        // Repeat the texture over the surface (4 per face)
+        scale 0.1 0.1
+      }
+    }
+  }
+}

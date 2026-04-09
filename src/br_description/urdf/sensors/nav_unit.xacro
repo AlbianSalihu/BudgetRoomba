@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="nav_unit" params="*origin parent prefix:='nav_unit'">
+        <joint name="${parent}_to_${prefix}base_link" type="fixed">
+            <parent link="${parent}"/>
+            <child link="${prefix}base_link"/>
+            <xacro:insert_block name="origin" />
+        </joint>
+        <link name="${prefix}base_link"/>
+        <joint name="${prefix}base_link_to_imu" type="fixed">
+            <parent link="${prefix}base_link"/>
+            <child link="imu_sensor_link"/>
+            <origin rpy="0 0 3.1415" xyz="0.053 0 0.001"/>
+
+        </joint>
+        <joint name="${prefix}base_link_to_lidar" type="fixed">
+            <parent link="${prefix}base_link"/>
+            <child link="lidar_sensor_link"/>
+            <origin rpy="0 0 3.1415" xyz="0 0 0.045"/>
+
+        </joint>
+        <link name="lidar_sensor_link"/>
+        <link name="imu_sensor_link"/>
+
+    </xacro:macro>
+    
+
+ 
+
+</robot>

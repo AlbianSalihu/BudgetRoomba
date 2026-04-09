@@ -1,0 +1,84 @@
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="raspberry_pi_camera_2_1" params="*origin sim sim_noise:=0.001 sim_camera_topic_ns:='/camera' sim_fps:=60 parent prefix:='camera_'">
+        
+        <joint name="${parent}_to_${prefix}base_link" type="fixed">
+            <parent link="${parent}"/>
+            <child link="${prefix}base_link"/>
+            <xacro:insert_block name="origin" />
+        </joint>
+
+        <link name="${prefix}base_link">
+            <xacro:dummy_inertia/>
+            <visual>
+                <origin rpy="0 1.57 0" xyz="0 0 0.0"/>
+                <geometry>
+                    <mesh filename="file://$(find br_description)/meshes/sensors/raspberry_pi_camera_2_1.stl" scale="1e-3 1e-3 1e-3"/>
+                </geometry>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0 0 0.025"/>
+                <geometry>
+                    <box size="0.05 0.05 0.05"/>
+                </geometry>
+            </collision>
+        </link>
+
+
+
+
+        <joint name="${prefix}base_link_to_${prefix}sensor_link" type="fixed">
+            <parent link="${prefix}base_link"/>
+            <child link="${prefix}sensor_link"/>
+            <origin xyz="0 0 0.025"/>
+        </joint>
+        <link name="${prefix}sensor_link">
+            <xacro:dummy_inertia/>
+        </link>
+        <xacro:if value="${sim}">
+            <gazebo reference='${parent}_to_${prefix}base_link'>
+                <preserveFixedJoint>true</preserveFixedJoint>
+            </gazebo>
+            <gazebo reference='${prefix}base_link_to_${prefix}sensor_link'>
+                <preserveFixedJoint>true</preserveFixedJoint>
+            </gazebo>
+
+            <gazebo reference="${prefix}sensor_link">
+                <sensor type="camera" name="camera1">
+                <update_rate>${sim_fps}</update_rate>
+                <camera name="head">
+                    <horizontal_fov>1.3962634</horizontal_fov>
+                    <image>
+                        <width>1280</width>
+                        <height>720</height>
+                        <format>R8G8B8</format>
+                    </image>
+                    <clip>
+                        <near>0.02</near>
+                        <far>300</far>
+                    </clip>
+                    <noise>
+                        <type>gaussian</type>
+                        <!-- Noise is sampled independently per pixel on each frame.
+                            That pixel's noise value is added to each of its color
+                            channels, which at that point lie in the range [0,1]. -->
+                        <mean>0.0</mean>
+                        <stddev>${sim_noise}</stddev>
+                    </noise>
+                </camera>
+                <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+                    <alwaysOn>true</alwaysOn>
+                    <camera_name>${sim_camera_topic_ns}</camera_name>
+                    <!-- <hack_baseline>0.7</hack_baseline>
+                    <focal_length>0.0</focal_length>
+                    <border_crop>0.0</border_crop>
+                    <min_depth>0.0</min_depth>
+                    <max_depth>0.0</max_depth> -->
+                </plugin>
+                </sensor>
+            </gazebo>
+
+            
+        </xacro:if>
+
+    </xacro:macro>
+</robot>

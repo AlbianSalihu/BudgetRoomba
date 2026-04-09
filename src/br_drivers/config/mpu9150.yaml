@@ -1,0 +1,9 @@
+imu_driver:
+  ros__parameters:
+    update_frequency: 200.0
+    calibrate_on_start: true
+    quaternion_computation: False
+    measure_temperature: false
+    gravitational_acceleration: 9.81
+    i2c_sanity_check: true
+    frame_id: imu_sensor_link
