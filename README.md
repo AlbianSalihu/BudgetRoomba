@@ -101,9 +101,9 @@ Custom-trained YOLOv5-S model loaded via `torch.hub`. The detector runs a slidin
 
 ### `br_brick_management` — Detection Memory & Cost Map
 
-`BrickMapper` node maintains a 9×9 m `grid_map::GridMap` over the arena frame (5 cm resolution, 180×180 cells). Incoming detections from `/detected_markers` add probability mass to the map; the map decays at rate `DECAY = 0.1` every 5 seconds.
+`BrickMapper` node maintains a 9×9 m `grid_map::GridMap` over the arena frame (5 cm resolution, 180×180 cells). Incoming detections from `/detected_markers` add probability mass to the map; the map decays at rate `DECAY = 0.1` every processing cycle.
 
-**Detection extraction:** every 5 s, the map is scanned for the global maximum. If it exceeds `DETECTION_THRESHOLD = 0.2`, a valid detection is reported at that position and the surrounding 0.3 m radius is zeroed (non-maximum suppression). The result is forwarded to `br_brain` as a `BrickDetection` service response.
+**Detection extraction:** at 5 Hz (every 0.2 s), the map is scanned for the global maximum. If it exceeds `DETECTION_THRESHOLD = 0.2`, a valid detection is reported at that position and the surrounding 0.3 m radius is zeroed (non-maximum suppression). The result is forwarded to `br_brain` as a `BrickDetection` service response.
 
 The map is also published as a `nav_msgs/OccupancyGrid` on `/brick_cost_map` for visualization and as a `grid_map_msgs/GridMap` on `/brick_grid_map` for downstream consumers.
 
